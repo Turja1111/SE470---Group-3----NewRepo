@@ -107,3 +107,118 @@ export const addComment = async (req, res) => {
         res.status(500).json({ message: 'Error adding comment' });
     }
 };
+
+
+export const updatePost = async (req, res) => {
+    try {
+        const uploadResult = await new Promise((resolve, reject) => {
+            upload.single('image')(req, res, (err) => {
+                if (err) reject(err);
+                resolve(req.file);
+            });
+        });
+
+        const post = await Post.findById(req.params.id);
+        if (!post) {
+            return res.status(404).json({ message: 'Post not found' });
+        }
+
+        if (post.author.toString() !== req.user.id) {
+            return res.status(403).json({ message: 'Not authorized to edit this post' });
+        }
+
+        post.content = req.body.content;
+        
+        // Handle image updates
+        console.log(req.body.removeImage);
+        if (uploadResult) {
+            post.imageUrl = `/uploads/${uploadResult.filename}`;
+        } else if (req.body.removeImage === 'true') {
+            post.imageUrl = null;
+        }
+        console.log('Post updated:', post);
+
+        await post.save();
+        res.json(post);
+    } catch (error) {
+        res.status(500).json({ message: 'Error updating post' });
+    }
+};
+
+
+export const getPosts = async (req, res) => {
+    try {
+        const { category } = req.query;
+        const query = category && category !== 'all' ? { category } : {};
+
+        const posts = await Post.find(query)
+            .sort({ createdAt: -1 })
+            .populate('author', 'username avatar');
+        res.json(posts);
+    } catch (error) {
+        res.status(500).json({ message: 'Error fetching posts' });
+    }
+};
+
+export const deletePost = async (req, res) => {
+    try {
+        const post = await Post.findById(req.params.id);
+        if (!post) {
+            return res.status(404).json({ message: 'Post not found' });
+        }
+
+        if (post.author.toString() !== req.user.id) {
+            return res.status(403).json({ message: 'Not authorized to delete this post' });
+        }
+
+        await post.deleteOne();
+        res.json({ message: 'Post deleted successfully' });
+    } catch (error) {
+        res.status(500).json({ message: 'Error deleting post' });
+    }
+};
+
+export const getComments = async (req, res) => {
+    try {
+        const post = await Post.findById(req.params.id)
+            .populate('comments.user', 'username avatar _id');
+        if (!post) {
+            return res.status(404).json({ message: 'Post not found' });
+        }
+        res.json(post.comments);
+    } catch (error) {
+        res.status(500).json({ message: 'Error fetching comments' });
+    }
+};
+
+export const deleteComment = async (req, res) => {
+    console.log("Received request to delete a comment");
+    try {
+        const post = await Post.findById(req.params.postId);
+        if (!post) {
+            return res.status(404).json({ message: 'Post not found' });
+        }
+
+        const comment = post.comments.id(req.params.commentId);
+        if (!comment) {
+            return res.status(404).json({ message: 'Comment not found' });
+        }
+
+        if (comment.user.toString() !== req.user.id) {
+            console.log("Post not authorized to delete this comment");
+            return res.status(403).json({ message: 'Not authorized to delete this comment' });
+        }
+        console.log("Comment found and authorized to delete");
+        post.comments.pull({ _id: req.params.commentId });
+        await post.save();
+        console.log("Comment deleted successfully");
+
+        const populatedPost = await Post.findById(post._id)
+            .populate('comments.user', 'username avatar');
+
+        res.json(populatedPost);
+    } catch (error) {
+        res.status(500).json({ message: 'Error deleting comment' });
+    }
+};
+
