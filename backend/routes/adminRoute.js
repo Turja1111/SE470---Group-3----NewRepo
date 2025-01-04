@@ -10,4 +10,11 @@ adminRouter.post("/activate", authenticateToken, activate)
 adminRouter.get("/suspension/:email", authenticateToken, isSuspended)
 
 
+import { updateReportStatus } from "../controllers/adminController.js";
+import {authenticateToken} from "../config/middlewares.js";
+
+
+adminRouter.patch("/reports/:id/status", authenticateToken, updateReportStatus)
+
+
 export default adminRouter

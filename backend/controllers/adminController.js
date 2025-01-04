@@ -53,4 +53,27 @@ export async function isSuspended(request, response) {
         console.error("Error checking suspension status:", error);
     }
 }
+export const updateReportStatus = async (req, res) => {
+    console.log("Received request to update report status");
+    try {
+        const { id } = req.params;
+        const { status } = req.body;
+        
+        if (!['resolved', 'rejected'].includes(status)) {
+            return res.status(400).json({ message: "Invalid status value" });
+        }
 
+        const updatedReport = await Report.findByIdAndUpdate(
+            id,
+            { status },
+            { new: true }
+        );
+
+        if (!updatedReport) {
+            return res.status(404).json({ message: "Report not found" });
+        }
+
+    } catch (error) {
+        res.status(500).json({ message: "Error updating report status", error: error.message });
+    }
+}

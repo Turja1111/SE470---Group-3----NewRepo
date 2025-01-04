@@ -11,6 +11,7 @@ import axios from 'axios'
 
 
 const Home = () => {
+
   const [quote, setQuote] = useState('');
 
   useEffect(() => {
@@ -121,11 +122,14 @@ const App = () => {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/admin" element={<Admin />} />
+          <Route path="/report" element={<Report />} />
 
         </Routes>
       </div>
     </Router>
   )
 }
+
+
 
 export default App
