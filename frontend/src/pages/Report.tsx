@@ -141,7 +141,18 @@ const Report = () => {
                 </select>
               </div>
 
-              
+              {formData.type === 'profile-report' && (
+                <div>
+                  <label className="block text-sm font-medium text-[#4C5B61] mb-2">Pseudoname of the user</label>
+                  <input
+                    type="text"
+                    value={formData.profileId}
+                    onChange={(e) => setFormData({ ...formData, profileId: e.target.value })}
+                    className="w-full px-4 py-3 border border-[#C5C5C5] rounded-lg focus:outline-none focus:border-[#4D6A6D]"
+                    required
+                  />
+                </div>
+              )}
 
               {formData.type === 'chat-report' && (
                 <div>
