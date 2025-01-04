@@ -2,6 +2,7 @@ import bcrypt from "bcrypt";
 import User from "../models/userModel.js";
 import jwt from "jsonwebtoken";
 import nodemailer from 'nodemailer';
+import Question from "../models/questionModel.js";
 import ProfilePicture from "../models/profilePicture.js";
 
 export async function verifyEmail(req, res) {
@@ -343,6 +344,17 @@ export const companions = async (req, res) => {
     try {
         const companions = await User.find({ isCompanion: true });
         res.status(200).json(companions);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: "Something went wrong" });
+    }
+};
+
+export const questions = async (req, res) => {
+    console.log("Received request to get questions");
+    try {
+        const questions = await Question.find();
+        res.status(200).json(questions);
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: "Something went wrong" });
