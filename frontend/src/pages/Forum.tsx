@@ -1,6 +1,8 @@
 import React, { useState, useRef, useEffect } from 'react';
 import axios from 'axios';
 import {
+    ChevronRight,
+    ChevronDown,
     Link as LinkIcon,
     Pencil,
     Trash2,
@@ -459,8 +461,56 @@ const Forum = () => {
                         ))}
                 </div>
             </div>
-
             
+            {/* Right Sidebar */}
+            <div className="w-60 space-y-3 sticky top-6">
+                    <div className="bg-white p-4 rounded-lg shadow-sm">
+                        <h3 className="font-semibold text-[#4C5B61] mb-3">Filter by Category</h3>
+                        <div className="space-y-2">
+                            <button
+                                onClick={() => setSelectedCategory('all')}
+                                className={`w-full text-left p-2 rounded-lg text-sm transition-colors ${selectedCategory === 'all'
+                                        ? 'bg-[#4D6A6D] text-white'
+                                        : 'hover:bg-[#C5C5C5]/20 text-[#4C5B61]'
+                                    }`}
+                            >
+                                All Posts
+                            </button>
+                            {categories.map(category => (
+                                <button
+                                    key={category}
+                                    onClick={() => setSelectedCategory(category)}
+                                    className={`w-full text-left p-2 rounded-lg text-sm transition-colors ${selectedCategory === category
+                                        ? 'bg-[#4D6A6D] text-white'
+                                        : 'hover:bg-[#C5C5C5]/20 text-[#4C5B61]'
+                                        }`}
+                                >
+                                    {category}
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+
+                    <div className="bg-white p-3 rounded-lg">
+                        <h3 className="font-bold text-sm text-[#4C5B61] mb-2">See what's people posting</h3>
+                        <img src="/api/placeholder/300/200" alt="Community illustration" className="rounded-lg w-full" />
+                    </div>
+
+                    <button className="w-full bg-[#4D6A6D] text-white p-2 rounded-lg hover:bg-[#829191] flex justify-between items-center text-sm">
+                        My Communities
+                        <ChevronDown size={14} />
+                    </button>
+
+                    <button className="w-full bg-[#4D6A6D] text-white p-2 rounded-lg hover:bg-[#829191] flex justify-between items-center text-sm">
+                        Discover More
+                        <ChevronRight size={14} />
+                    </button>
+
+                    <button className="w-full bg-[#4D6A6D] text-white p-2 rounded-lg hover:bg-[#829191] flex justify-between items-center text-sm">
+                        Quick Links
+                        <ChevronDown size={14} />
+                    </button>
+                </div>
         </div>
     );
 };
